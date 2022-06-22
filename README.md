@@ -2,7 +2,11 @@
 
 This repo contains a Dockerfile used to build a debian-based Docker image with R and Python installed.
 
-It includes the following python packages:
+It includes the following R packages:
+
+- tidyverse
+
+And the following python packages:
 
 - botorch
 - numpy
@@ -16,21 +20,27 @@ The R and Python versions are specified as build args when building the docker i
 
 The R version must match an available [Docker r-base tag](https://hub.docker.com/_/r-base?tab=tags).  The Python version must be available to download from [the Python ftp directory](https://www.python.org/ftp/python/).
 
+## Specifying R and Python packages
+
+When the image is built, it will install the packages defined in the `./build/R_packages.txt` and `./build/python_requirements.txt` files.  The `python_requirements.txt` file can [include specific versions](https://pip.pypa.io/en/stable/reference/requirements-file-format/) to install.
+
 ## Building the Image
 
 To build the image:
 
-1) First set the R and Python versions to use:
+1) First, set the R and Python versions to use:
 
 ```bash
 export R_VERSION=4.2.0
 export PYTHON_VERSION=3.9.13
 ```
 
-2) Then run the docker build command:
+2) (Optional) Change the R and/or python packages to include.
+
+3) Then, run the docker build command:
 
 ```bash
-docker build -t triticeaetoolbox/r_python:R${R_VERSION}-python${PYTHON_VERSION} --build-arg R_VERSION=${R_VERSION} --build-arg PYTHON_VERSION=${PYTHON_VERSION} .`
+docker build -t triticeaetoolbox/r_python:R${R_VERSION}-python${PYTHON_VERSION} --build-arg R_VERSION=${R_VERSION} --build-arg PYTHON_VERSION=${PYTHON_VERSION} .
 ```
 
 NOTE: You may need to change the last `.` (representing the current working directory) to the full/absolute path of the directory containing the Dockerfile.
@@ -72,7 +82,11 @@ To download a specific image, run `docker pull triticeaetoolbox/r_python:R4.2.0-
 
 ## Starting a Container
 
-To run the image in a new container, run `docker run --name jannink_analysis -v $(pwd)/scripts/:/home/analysis/scripts -d triticeaetoolbox/r_python:R4.2.0-python3.9.13`.
+To run the image in a new container:
+
+```bash
+docker run --name jannink_analysis -v $(pwd)/scripts:/home/analysis/scripts -d triticeaetoolbox/r_python:R4.2.0-python3.9.13
+```
 
 This will create and run a new container named `jannink_analysis` using the image `triticeaetoolbox/r_python` with the tag `R4.2.0-python3.9.13`.
 
@@ -80,7 +94,7 @@ It will also bind-mount the `./scripts` directory from the host into the `/home/
 
 ## Using the Container
 
-By default, the container will not execute any commands or scripts on its own.  To run scripts within the container, start a bash session within the container by running `docker exec -it jannink_analysis bash`
+By default, the container will not execute any commands or scripts on its own.  To run scripts within the container, start a bash session within the container by running `docker exec -it jannink_analysis bash` and then manually execute the scripts in the `/home/analysis/scripts` directory.
 
 ## Stopping the Container
 

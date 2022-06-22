@@ -2,8 +2,10 @@ ARG R_VERSION
 FROM r-base:${R_VERSION}
 
 # Add System build dependencies
+# and packages required for R and python
 RUN apt-get update && \
     apt-get install -y curl build-essential \
+        libcurl4-openssl-dev libxml2-dev \
         zlib1g-dev libffi-dev libssl-dev libbz2-dev libncursesw5-dev libgdbm-dev \
         liblzma-dev libsqlite3-dev tk-dev uuid-dev libreadline-dev
 
@@ -35,8 +37,15 @@ RUN rm -f Python-${PYTHON_VERSION}.tgz
 RUN pip install --upgrade pip
 
 # Install python modules
-RUN pip install botorch numpy rpy2
+COPY ./build/python_requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
+RUN rm ./requirements.txt
 
+# Install R packages
+COPY ./build/R_packages.txt ./R_packages.txt
+RUN Rscript -e "dir.create(path=Sys.getenv(\"R_LIBS_USER\"), showWarnings=FALSE, recursive=TRUE)"
+RUN while IFS="" read -r p || [ -n "$p" ]; do Rscript -e "install.packages(\"$p\", lib=Sys.getenv(\"R_LIBS_USER\"), repos=\"https://cloud.r-project.org\")"; done < R_packages.txt
+RUN rm ./R_packages.txt
 
 # Keep the container running
 ENTRYPOINT ["/bin/bash", "-c", "tail -f /dev/null"]
