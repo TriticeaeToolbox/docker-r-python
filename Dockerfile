@@ -10,10 +10,7 @@ RUN apt-get update && \
         liblzma-dev libsqlite3-dev tk-dev uuid-dev libreadline-dev
 
 # Create analysis user
-RUN useradd -ms /bin/bash analysis
-ENV PATH="/home/analysis/.local/bin:${PATH}"
-USER analysis
-WORKDIR /home/analysis
+WORKDIR /analysis
 
 # Download Python
 ARG PYTHON_VERSION
@@ -21,15 +18,15 @@ RUN curl -O https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_
 RUN tar -xvf Python-${PYTHON_VERSION}.tgz
 
 # Build Python from source
-WORKDIR /home/analysis/Python-${PYTHON_VERSION}/
-RUN ./configure --enable-optimizations --with-ensurepip=install --prefix=/home/analysis/.local/
+WORKDIR /analysis/Python-${PYTHON_VERSION}/
+RUN ./configure --enable-optimizations --with-ensurepip=install --prefix=/usr/local/
 RUN make -j 8
 RUN make install
-RUN ln -s /home/analysis/.local/bin/python3 /home/analysis/.local/bin/python
-RUN ln -s /home/analysis/.local/bin/pip3 /home/analysis/.local/bin/pip
+RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
+RUN ln -s /usr/local/bin/pip3 /usr/local/bin/pip
 
 # Cleanup Python Installation
-WORKDIR /home/analysis
+WORKDIR /analysis
 RUN rm -rf Python-${PYTHON_VERSION}/ 
 RUN rm -f Python-${PYTHON_VERSION}.tgz
 
@@ -46,6 +43,9 @@ COPY ./build/R_packages.txt ./R_packages.txt
 RUN Rscript -e "dir.create(path=Sys.getenv(\"R_LIBS_USER\"), showWarnings=FALSE, recursive=TRUE)"
 RUN while IFS="" read -r p || [ -n "$p" ]; do Rscript -e "install.packages(\"$p\", lib=Sys.getenv(\"R_LIBS_USER\"), repos=\"https://cloud.r-project.org\")"; done < R_packages.txt
 RUN rm ./R_packages.txt
+
+# Create scripts directory
+RUN mkdir -p /analysis/scripts
 
 # Keep the container running
 ENTRYPOINT ["/bin/bash", "-c", "tail -f /dev/null"]

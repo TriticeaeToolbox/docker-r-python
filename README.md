@@ -85,16 +85,16 @@ To download a specific image, run `docker pull triticeaetoolbox/r_python:R4.2.0-
 To run the image in a new container:
 
 ```bash
-docker run --name jannink_analysis -v $(pwd)/scripts:/home/analysis/scripts -d triticeaetoolbox/r_python:R4.2.0-python3.9.13
+docker run --name jannink_analysis -v $(pwd)/scripts:/analysis/scripts -d triticeaetoolbox/r_python:R4.2.0-python3.9.13
 ```
 
 This will create and run a new container named `jannink_analysis` using the image `triticeaetoolbox/r_python` with the tag `R4.2.0-python3.9.13`.
 
-It will also bind-mount the `./scripts` directory from the host into the `/home/analysis/scripts` directory within the container.  You can place scripts and data in this directory and they will be available within the Docker container.  Any output from the container saved in the `/home/analysis/scripts` directory will also be saved on the host.
+It will also bind-mount the `./scripts` directory from the host into the `/analysis/scripts` directory within the container.  You can place scripts and data in this directory and they will be available within the Docker container.  Any output from the container saved in the `/analysis/scripts` directory will also be saved on the host.
 
 ## Using the Container
 
-By default, the container will not execute any commands or scripts on its own.  To run scripts within the container, start a bash session within the container by running `docker exec -it jannink_analysis bash` and then manually execute the scripts in the `/home/analysis/scripts` directory.
+By default, the container will not execute any commands or scripts on its own.  To run scripts within the container, start a bash session within the container by running `docker exec -it jannink_analysis bash` and then manually execute the scripts in the `/analysis/scripts` directory.
 
 ## Stopping the Container
 
