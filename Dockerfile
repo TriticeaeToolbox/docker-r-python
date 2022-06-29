@@ -9,16 +9,14 @@ RUN apt-get update && \
         zlib1g-dev libffi-dev libssl-dev libbz2-dev libncursesw5-dev libgdbm-dev \
         liblzma-dev libsqlite3-dev tk-dev uuid-dev libreadline-dev
 
-# Create analysis user
-WORKDIR /analysis
-
 # Download Python
+WORKDIR /root
 ARG PYTHON_VERSION
 RUN curl -O https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz
 RUN tar -xvf Python-${PYTHON_VERSION}.tgz
 
 # Build Python from source
-WORKDIR /analysis/Python-${PYTHON_VERSION}/
+WORKDIR /root/Python-${PYTHON_VERSION}/
 RUN ./configure --enable-optimizations --with-ensurepip=install --prefix=/usr/local/
 RUN make -j 8
 RUN make install
@@ -26,7 +24,7 @@ RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
 RUN ln -s /usr/local/bin/pip3 /usr/local/bin/pip
 
 # Cleanup Python Installation
-WORKDIR /analysis
+WORKDIR /root
 RUN rm -rf Python-${PYTHON_VERSION}/ 
 RUN rm -f Python-${PYTHON_VERSION}.tgz
 
@@ -45,7 +43,7 @@ RUN while IFS="" read -r p || [ -n "$p" ]; do Rscript -e "install.packages(\"$p\
 RUN rm ./R_packages.txt
 
 # Create scripts directory
-RUN mkdir -p /analysis/scripts
+RUN mkdir -p /root/scripts
 
 # Keep the container running
 ENTRYPOINT ["/bin/bash", "-c", "tail -f /dev/null"]
