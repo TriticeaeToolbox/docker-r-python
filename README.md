@@ -5,6 +5,10 @@ This repo contains a Dockerfile used to build a debian-based Docker image with R
 It includes the following R packages:
 
 - tidyverse
+- dplyr
+- devtools
+- AlphaSimR
+- jeanlucj/BreedSimCost (from GitHub)
 
 And the following python packages:
 
