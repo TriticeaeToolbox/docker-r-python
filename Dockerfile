@@ -7,7 +7,9 @@ RUN apt-get update && \
     apt-get install -y curl build-essential \
         libcurl4-openssl-dev libxml2-dev \
         zlib1g-dev libffi-dev libssl-dev libbz2-dev libncursesw5-dev libgdbm-dev \
-        liblzma-dev libsqlite3-dev tk-dev uuid-dev libreadline-dev
+        liblzma-dev libsqlite3-dev tk-dev uuid-dev libreadline-dev \
+        libharfbuzz-dev libfribidi-dev \
+        libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
 
 # Download Python
 WORKDIR /root

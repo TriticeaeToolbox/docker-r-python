@@ -1,1 +1,4 @@
 tidyverse
+dplyr
+devtools
+AlphaSimR
