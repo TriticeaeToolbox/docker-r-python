@@ -9,7 +9,8 @@ RUN apt-get update && \
         zlib1g-dev libffi-dev libssl-dev libbz2-dev libncursesw5-dev libgdbm-dev \
         liblzma-dev libsqlite3-dev tk-dev uuid-dev libreadline-dev \
         libharfbuzz-dev libfribidi-dev \
-        libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
+        libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
+        cmake
 
 # Download Python
 WORKDIR /root
@@ -43,6 +44,12 @@ COPY ./build/R_packages.txt ./R_packages.txt
 RUN Rscript -e "dir.create(path=Sys.getenv(\"R_LIBS_USER\"), showWarnings=FALSE, recursive=TRUE)"
 RUN while IFS="" read -r p || [ -n "$p" ]; do Rscript -e "install.packages(\"$p\", lib=Sys.getenv(\"R_LIBS_USER\"), repos=\"https://cloud.r-project.org\")"; done < R_packages.txt
 RUN rm ./R_packages.txt
+
+# Install R packages from Github
+# !! Make sure devtools package is installed first !!
+COPY ./build/R_packages_github.txt ./R_packages_github.txt
+RUN while IFS="" read -r p || [ -n "$p" ]; do Rscript -e "devtools::install_github(\"$p\", lib=Sys.getenv(\"R_LIBS_USER\"))"; done < R_packages_github.txt
+RUN rm ./R_packages_github.txt
 
 # Create scripts directory
 RUN mkdir -p /root/scripts
