@@ -8,6 +8,8 @@ It includes the following R packages:
 - dplyr
 - devtools
 - AlphaSimR
+- mvtnorm
+- tmvtnorm
 - jeanlucj/BreedSimCost (from GitHub)
 
 And the following python packages:
