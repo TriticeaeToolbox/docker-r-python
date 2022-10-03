@@ -2,3 +2,5 @@ tidyverse
 dplyr
 devtools
 AlphaSimR
+mvtnorm
+tmvtnorm
